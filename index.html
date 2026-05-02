@@ -1136,30 +1136,49 @@ function nextPage(num) {
 }
 
 function sendForm() {
-  const fname = document.getElementById('fname').value.trim();
-  const lname = document.getElementById('lname').value.trim();
-  const email = document.getElementById('femail').value.trim();
-  const company = document.getElementById('fcompany').value.trim();
-  const brief = document.getElementById('fbrief').value.trim();
+  const fname = document.getElementById('fname').value.trim();[cite: 2]
+  const lname = document.getElementById('lname').value.trim();[cite: 2]
+  const email = document.getElementById('femail').value.trim();[cite: 2]
+  const company = document.getElementById('fcompany').value.trim();[cite: 2]
+  const brief = document.getElementById('fbrief').value.trim();[cite: 2]
 
-  if (!email) { nextPage(1); document.getElementById('femail').focus(); return; }
+  if (!email) { nextPage(1); document.getElementById('femail').focus(); return; }[cite: 2]
 
-  const subject = encodeURIComponent('Strategy Call Request — ' + ((fname || 'Visitor') + ' ' + lname).trim());
-  const body = encodeURIComponent(
-    'Name: ' + (fname + ' ' + lname).trim() + '\n' +
-    'Email: ' + email + '\n' +
-    'Company: ' + (company || '—') + '\n\n' +
-    'Services Needed:\n' + (selectedServices.length ? selectedServices.join(', ') : '—') + '\n\n' +
-    'Monthly Budget: ' + (selectedBudget || '—') + '\n\n' +
-    'Primary Goal: ' + (selectedGoal || '—') + '\n\n' +
-    'Additional Notes:\n' + (brief || 'None provided.')
-  );
-  window.location.href = 'mailto:naqashnbhatti@gmail.com?subject=' + subject + '&body=' + body;
+  // Prepare the data to be sent to Formspree
+  const data = {
+    name: (fname + ' ' + lname).trim(),
+    email: email,
+    company: (company || '—'),
+    services: (selectedServices.length ? selectedServices.join(', ') : '—'),
+    budget: (selectedBudget || '—'),
+    goal: (selectedGoal || '—'),
+    additionalNotes: (brief || 'None provided.')
+  };
 
-  document.getElementById('formOk').classList.add('show');
-  const t = document.getElementById('toast');
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3500);
+  // Sending the request to your specific Formspree endpoint
+  fetch("https://formspree.io/f/mykozvqg", {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    }
+  }).then(response => {
+    if (response.ok) {
+      // Success: Show the confirmation UI already built into your site
+      document.getElementById('formOk').classList.add('show');[cite: 2]
+      const t = document.getElementById('toast');[cite: 2]
+      t.classList.add('show');[cite: 2]
+      setTimeout(() => t.classList.remove('show'), 3500);[cite: 2]
+      
+      // Optional: Clear form fields after success
+      document.querySelectorAll('.form input, .form textarea').forEach(input => input.value = '');
+    } else {
+      alert("Oops! There was a problem submitting your request. Please try again.");
+    }
+  }).catch(error => {
+    alert("Oops! Connection error. Please check your internet and try again.");
+  });
 }
 
 /* ── CARD TILT ── */
